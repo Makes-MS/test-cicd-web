@@ -1,0 +1,17 @@
+services:
+    web:
+        image: php:8.2-apache
+        container_name: apache_php_server
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        volumes:
+            - ./src:/var/www/html
+        environment:
+            - TZ=Europe/Kyiv
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
