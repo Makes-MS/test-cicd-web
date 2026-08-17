@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Start Docker Compose
         run: docker compose up -d
@@ -43,8 +45,21 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/test-cicd-web:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/test-cicd-web:latest
+            ${{ secrets.DOCKER_USERNAME }}/test-cicd-web:${{ github.ref_name }}
+
+  cd:
+    name: CD
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actionps/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - run: echo ""
