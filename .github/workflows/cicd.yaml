@@ -1,4 +1,4 @@
-name: test-cicd-web
+name: test-cicd-web2
 
 on: push
 
