@@ -1,4 +1,4 @@
-name: test-cicd-web2
+name: test-cicd-web
 
 on: push
 
@@ -11,5 +11,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Run test
-        run: make test
+      - name: Start Docker Compose
+        run: docker compose up -d
+
+      - name: Wait for services to boot
+        run: sleep 5
+
+      - name: Test Apache & PHP response
+        run: |
+          docker compose up -d
+
+          sleep 3
+
+          response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://localhost:8080)
+          if [ "$response" -eq 200 ]; then
+            echo "Success: Server responded with status 200"
+          else
+            echo "Error: Server returned status $response"
+            exit 1
+          fi
+
+      - name: Stop Docker Compose
+        if: always()
+        run: docker compose down
